@@ -4,7 +4,7 @@ A small repository to test simple games using HTML.
 
 Thanks to @ronkyGames for the starter template ;)
 
-You other projects created by me in [my profile](https://github.com/DTrombett).
+You can check other projects created by me on [my profile](https://github.com/DTrombett).
 
 ## Testing
 
