@@ -2,14 +2,14 @@
  * The key controls
  */
 class KeyControls {
-	#keys: Record<string, true | undefined> = {};
+	#keys = new Set<string>();
 
 	constructor() {
 		document.addEventListener("keydown", (e) => {
-			this.#keys[e.code] = true;
+			this.#keys.add(e.code);
 			if (e.code.startsWith("Arrow")) e.preventDefault();
 		});
-		document.addEventListener("keyup", (e) => delete this.#keys[e.code]);
+		document.addEventListener("keyup", (e) => this.#keys.delete(e.code));
 	}
 
 	/**
@@ -18,7 +18,7 @@ class KeyControls {
 	 * @returns Whether the key is pressed
 	 */
 	getKey(key: string) {
-		return this.#keys[key] ?? false;
+		return this.#keys.has(key);
 	}
 
 	/**

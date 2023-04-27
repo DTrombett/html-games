@@ -37,6 +37,7 @@ class CanvasRenderer {
 	 * @param container - The container to render
 	 */
 	render(container: Container) {
+		this.ctx.clearRect(0, 0, this.view.width, this.view.width);
 		for (const child of container.children) {
 			this.ctx.save(); // save context options to the default
 			if (child instanceof Text) {

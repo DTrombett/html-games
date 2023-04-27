@@ -1,4 +1,3 @@
-// Import libraries
 import CanvasRenderer from "./CanvasRenderer";
 import KeyControls from "./controls/KeyControls";
 import Baddie from "./elements/Baddie";
