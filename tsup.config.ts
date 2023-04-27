@@ -6,6 +6,7 @@ const options: Options = {
 	format: ["esm"],
 	platform: "node",
 	target: "esnext",
+	minify: true,
 };
 
 export default defineConfig(options);

@@ -1,30 +1,53 @@
-import Texture from "../Texture";
 import KeyControls from "../controls/KeyControls";
 import Sprite from "./Sprite";
+import Texture from "./Texture";
 
+/**
+ * The ship
+ */
 class Ship extends Sprite {
-	gameWidth: number;
-	gameHeight: number;
+	/**
+	 * The texture for the sprite
+	 */
+	static texture = new Texture("res/images/spaceship.png");
+
+	/**
+	 * The game size
+	 */
+	gameSize: { gameWidth: number; gameHeight: number };
+
+	/**
+	 * Th key controls of the game
+	 */
 	keyControls: KeyControls;
-	constructor(gameWidth: number, gameHeight: number, keyControls: KeyControls) {
-		super(new Texture("res/images/spaceship.png"), {
-			x: gameWidth / 8 - 16,
-			y: gameHeight / 2 - 16,
+
+	/**
+	 *
+	 * @param gameWidth - The game wi
+	 * @param gameHeight
+	 * @param keyControls
+	 */
+	constructor(
+		gameSize: { gameWidth: number; gameHeight: number },
+		keyControls: KeyControls
+	) {
+		super(Ship.texture, {
+			x: gameSize.gameWidth / 8 - 16,
+			y: gameSize.gameHeight / 2 - 16,
 		});
-		this.gameWidth = gameWidth;
-		this.gameHeight = gameHeight;
+		this.gameSize = gameSize;
 		this.keyControls = keyControls;
 	}
 
 	update(dt: number) {
-		this.pos.x += (this.keyControls.x * dt * 2) / 10;
-		this.pos.y += (this.keyControls.y * dt * 2) / 10;
-
-		// test border
+		this.pos.x += (this.keyControls.x * dt) / 5;
+		this.pos.y += (this.keyControls.y * dt) / 5;
 		if (this.pos.x < 0) this.pos.x = 0;
-		if (this.pos.x > this.gameWidth - 32) this.pos.x = this.gameWidth - 32;
+		if (this.pos.x > this.gameSize.gameWidth - 32)
+			this.pos.x = this.gameSize.gameWidth - 32;
 		if (this.pos.y < 0) this.pos.y = 0;
-		if (this.pos.y > this.gameHeight - 32) this.pos.y = this.gameHeight - 32;
+		if (this.pos.y > this.gameSize.gameHeight - 32)
+			this.pos.y = this.gameSize.gameHeight - 32;
 	}
 }
 

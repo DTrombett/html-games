@@ -6,10 +6,30 @@ export type TextStyle = Partial<{
 	fill: string;
 }>;
 
+/**
+ * A text element
+ */
 class Text extends CanvasElement {
+	/**
+	 * The text to display
+	 */
 	text: string;
+
+	/**
+	 * The style of the text
+	 */
 	style: TextStyle;
-	constructor(text: string, style: TextStyle = {}, position?: Partial<Position>) {
+
+	/**
+	 * @param text - The text to display
+	 * @param style - The style of the text
+	 * @param position - The start position of the element
+	 */
+	constructor(
+		text: string,
+		style: TextStyle = {},
+		position?: Partial<Position>
+	) {
 		super(position);
 		this.text = text;
 		this.style = style;

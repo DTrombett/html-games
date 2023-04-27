@@ -1,5 +1,5 @@
-// import libraries
-import Texture from "./Texture";
+// Import libraries
+import CanvasRenderer from "./CanvasRenderer";
 import KeyControls from "./controls/KeyControls";
 import Baddie from "./elements/Baddie";
 import Bullet from "./elements/Bullet";
@@ -7,120 +7,106 @@ import Container from "./elements/Container";
 import Ship from "./elements/Ship";
 import Sprite from "./elements/Sprite";
 import Text from "./elements/Text";
-import CanvasRenderer from "./renderer/CanvasRenderer";
+import Texture from "./elements/Texture";
 
-// TODO: Increase periodically the difficulty
+// TODO: Create a Game class
 // TODO: Adapt the game to the window size
 
-// Game setup code
 const gameWidth = 640;
-const gameHeight = 300;
-const renderer = new CanvasRenderer(gameWidth, gameHeight);
-document.querySelector("#board")!.appendChild(renderer.view);
-
-// Controls objects
+const gameHeight = 320;
+const scoreSize = 20;
+const gameOverSize = 30;
+const renderer = new CanvasRenderer({
+	gameHeight,
+	gameWidth,
+});
 const keyControls = new KeyControls();
-// Game Objects
 const scene = new Container();
-// Bullets
 const bullets = new Container<Bullet>();
-// Bad guys
 const baddies = new Container<Baddie>();
-// Make a spaceship
-const ship = new Ship(gameWidth, gameHeight, keyControls);
-// Add the score game object
-const score = new Text(
-	"score: ",
+const ship = new Ship({ gameWidth, gameHeight }, keyControls);
+const scoreText = new Text(
+	"Score: 0",
 	{
-		font: "20px sans-serif",
+		font: `${scoreSize}px sans-serif`,
 		fill: "#8B8994",
 		align: "center",
 	},
-	{ x: gameWidth / 2, y: gameHeight - 30 }
+	{ x: gameWidth / 2, y: gameHeight - scoreSize }
 );
-
-// Function game over
-const doGameOver = () => {
-	scene.add(
-		new Text(
-			"Game Over",
-			{
-				font: "30pt sans-serif",
-				fill: "#8B8994",
-				align: "center",
-			},
-			{ x: gameWidth / 2, y: 120 }
-		)
-	);
-	scene.remove(ship);
-	gameOver = true;
-};
-
-// Add everithing to the scene container
-scene.add(new Sprite(new Texture("res/images/bg.png")));
-scene.add(score);
-scene.add(ship);
-scene.add(bullets);
-scene.add(baddies);
-
-// Game state variables
+let gameOver = false;
+let last = 0;
 let lastShot = 0;
 let lastSpawn = 0;
-let spawnSpeed = 1_000;
-let scoreAmount = 0;
-let gameOver = false;
-//loop setup
-let dt = 0;
-let last = 0;
-
-function loop(ms: number) {
+let score = 0;
+let startTimestamp: number;
+const loop = (timestamp: number) => {
 	requestAnimationFrame(loop);
-	// set time variables to use in game logic
-	dt = ms - last;
-	last = ms;
-	// Game Logic Code Here
+	startTimestamp ??= timestamp;
+	const dt = timestamp - last;
+	const elapsed = timestamp - startTimestamp;
+
+	last = timestamp;
 	if (!gameOver) {
-		if (keyControls.action && ms - lastShot > 150) {
-			lastShot = ms;
-			bullets.add(new Bullet(gameWidth, { x: ship.pos.x + 24, y: ship.pos.y + 16 }));
-		}
-		if (ms - lastSpawn > spawnSpeed) {
-			lastSpawn = ms;
-			baddies.add(
-				new Baddie(-50 - Math.random() * Math.random() * 100, {
-					x: gameWidth,
-					y: Math.random() * (gameHeight - 32),
-				})
+		score += dt / 1_000;
+		if (keyControls.action && timestamp - lastShot > 100) {
+			bullets.add(
+				new Bullet(gameWidth, { x: ship.pos.x + 16, y: ship.pos.y + 16 })
 			);
-			// Accelerating for the next spawn
-			spawnSpeed = spawnSpeed < 100 ? 500 : spawnSpeed * 0.8;
+			lastShot = timestamp;
+		}
+		if (
+			elapsed >= 1_000 &&
+			timestamp - lastSpawn >=
+				(7_500_000 / elapsed) * (Math.random() * 0.5 + 0.75)
+		) {
+			baddies.add(
+				new Baddie(Math.random() * 100 + 100, { gameWidth, gameHeight })
+			);
+			lastSpawn = timestamp;
 		}
 	}
-	// Check for collisions
 	for (const baddie of baddies.children) {
-		for (const bullet of bullets.children) {
-			// check distance between baddie and bullet
+		for (const bullet of bullets.children)
 			if (
+				!bullet.dead &&
 				Math.sqrt(
 					(baddie.pos.x + 16 - (bullet.pos.x + 8)) ** 2 +
 						(baddie.pos.y + 16 - (bullet.pos.y + 8)) ** 2
 				) < 24
 			) {
-				// A hit
 				baddie.dead = true;
 				bullet.dead = true;
-				scoreAmount += Math.floor(ms / 100);
+				score += dt / 10;
 			}
-		}
-		// check if out of the screen
-		if (baddie.pos.x < -32) {
-			if (!gameOver) doGameOver();
+		if (baddie.pos.x < 0) {
+			if (!gameOver) {
+				scene.add(
+					new Text(
+						"Game Over",
+						{
+							font: `${gameOverSize}px sans-serif`,
+							fill: "red",
+							align: "center",
+						},
+						{ x: gameWidth / 2, y: gameHeight / 2 - gameOverSize }
+					)
+				);
+				scene.remove(ship);
+				gameOver = true;
+			}
 			baddie.dead = true;
 		}
 	}
-	score.text = `Score: ${scoreAmount}`;
+	scoreText.text = `Score: ${Math.floor(score)}`;
 	scene.update(dt);
-	// render the main container
 	renderer.render(scene);
-}
+};
+
+scene.add(new Sprite(new Texture("res/images/bg.png")));
+scene.add(scoreText);
+scene.add(baddies);
+scene.add(bullets);
+scene.add(ship);
+document.querySelector("#board")!.appendChild(renderer.view);
 requestAnimationFrame(loop);
