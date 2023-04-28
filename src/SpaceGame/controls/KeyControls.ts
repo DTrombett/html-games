@@ -5,20 +5,11 @@ class KeyControls {
 	#keys = new Set<string>();
 
 	constructor() {
-		document.addEventListener("keydown", (e) => {
+		document.body.addEventListener("keydown", (e) => {
 			this.#keys.add(e.code);
 			if (e.code.startsWith("Arrow")) e.preventDefault();
 		});
-		document.addEventListener("keyup", (e) => this.#keys.delete(e.code));
-	}
-
-	/**
-	 * Check if a key is being pressed.
-	 * @param key - The key to get
-	 * @returns Whether the key is pressed
-	 */
-	getKey(key: string) {
-		return this.#keys.has(key);
+		document.body.addEventListener("keyup", (e) => this.#keys.delete(e.code));
 	}
 
 	/**
@@ -46,6 +37,15 @@ class KeyControls {
 		if (this.getKey("ArrowDown") || this.getKey("KeyS")) return 1;
 		if (this.getKey("ArrowUp") || this.getKey("KeyW")) return -1;
 		return 0;
+	}
+
+	/**
+	 * Check if a key is being pressed.
+	 * @param key - The key to get
+	 * @returns Whether the key is pressed
+	 */
+	getKey(key: string) {
+		return this.#keys.has(key);
 	}
 }
 

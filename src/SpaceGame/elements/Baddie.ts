@@ -1,3 +1,4 @@
+import Game from "./Game";
 import Sprite from "./Sprite";
 import Texture from "./Texture";
 
@@ -13,28 +14,20 @@ class Baddie extends Sprite {
 	/**
 	 * The speed of the element in px/s
 	 */
-	speed: number;
+	speed = Math.random() * 100 + 100;
 
 	/**
-	 * @param speed - The speed of the element in px/s
-	 * @param gameSize - The game size
+	 * @param game - The game
 	 */
-	constructor(
-		speed: number,
-		gameSize: {
-			gameWidth: number;
-			gameHeight: number;
-		}
-	) {
-		super(Baddie.texture, {
-			x: gameSize.gameWidth,
-			y: Math.random() * (gameSize.gameHeight - 32),
+	constructor(game: Game) {
+		super(game, Baddie.texture, {
+			x: game.width,
+			y: Math.random() * (game.height - 32),
 		});
-		this.speed = speed;
 	}
 
 	update(dt: number) {
-		this.pos.x += Math.floor((-this.speed * dt) / 1_000);
+		this.pos.x += Math.round((-this.speed * dt) / 1_000);
 	}
 }
 

@@ -1,4 +1,5 @@
 import Container from "./elements/Container";
+import Game from "./elements/Game";
 import Sprite from "./elements/Sprite";
 import Text from "./elements/Text";
 
@@ -17,29 +18,32 @@ class CanvasRenderer {
 	ctx: CanvasRenderingContext2D;
 
 	/**
-	 * @param param0 - The game size
+	 * The game that instantiated this
 	 */
-	constructor({
-		gameHeight,
-		gameWidth,
-	}: {
-		gameWidth: number;
-		gameHeight: number;
-	}) {
+	game: Game;
+
+	/**
+	 * @param game - The game
+	 */
+	constructor(game: Game) {
+		this.game = game;
 		this.view = document.createElement("canvas");
-		this.view.width = gameWidth;
-		this.view.height = gameHeight;
+		this.view.width = game.width;
+		this.view.height = game.height;
 		this.ctx = this.view.getContext("2d")!;
 	}
 
 	/**
-	 * Render a container.
-	 * @param container - The container to render
+	 * Render the game.
 	 */
-	render(container: Container) {
+	render() {
 		this.ctx.clearRect(0, 0, this.view.width, this.view.width);
+		this.renderContainer(this.game.scene);
+	}
+
+	private renderContainer(container: Container) {
 		for (const child of container.children) {
-			this.ctx.save(); // save context options to the default
+			this.ctx.save();
 			if (child instanceof Text) {
 				const { font, fill, align } = child.style;
 
@@ -49,8 +53,8 @@ class CanvasRenderer {
 				this.ctx.fillText(child.text, child.pos.x, child.pos.y);
 			} else if (child instanceof Sprite)
 				this.ctx.drawImage(child.texture.img, child.pos.x, child.pos.y);
-			else if (child instanceof Container) this.render(child);
-			this.ctx.restore(); // restore to default options to not affect the others children of the container
+			else if (child instanceof Container) this.renderContainer(child);
+			this.ctx.restore();
 		}
 	}
 }

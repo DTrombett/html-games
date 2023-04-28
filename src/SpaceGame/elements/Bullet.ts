@@ -1,4 +1,4 @@
-import { Position } from "./CanvasElement";
+import Game from "./Game";
 import Sprite from "./Sprite";
 import Texture from "./Texture";
 
@@ -12,22 +12,18 @@ class Bullet extends Sprite {
 	static texture = new Texture("res/images/bullet.png");
 
 	/**
-	 * The game width
+	 * @param game - The game
 	 */
-	gameWidth: number;
-
-	/**
-	 * @param gameWidth - The game width
-	 * @param position - The start position
-	 */
-	constructor(gameWidth: number, position?: Partial<Position>) {
-		super(Bullet.texture, position);
-		this.gameWidth = gameWidth;
+	constructor(game: Game) {
+		super(game, Bullet.texture, {
+			x: game.ship.pos.x + 8,
+			y: game.ship.pos.y + 8,
+		});
 	}
 
 	update(dt: number) {
 		this.pos.x += (4 * dt) / 10;
-		this.dead ||= this.pos.x >= this.gameWidth + 20;
+		this.dead ||= this.pos.x >= this.game.width + 20;
 	}
 }
 

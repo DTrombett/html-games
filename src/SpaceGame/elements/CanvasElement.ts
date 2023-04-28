@@ -1,3 +1,5 @@
+import Game from "./Game";
+
 export type Position = {
 	x: number;
 	y: number;
@@ -18,9 +20,16 @@ class CanvasElement {
 	dead = false;
 
 	/**
+	 * The game that instantiated this
+	 */
+	game: Game;
+
+	/**
+	 * @param game - The game
 	 * @param param0 - The start position
 	 */
-	constructor({ x = 0, y = 0 }: Partial<Position> = {}) {
+	constructor(game: Game, { x = 0, y = 0 }: Partial<Position> = {}) {
+		this.game = game;
 		this.pos = { x, y };
 	}
 
