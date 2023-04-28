@@ -5,8 +5,7 @@ import { cwd } from "process";
 const app = express();
 
 app.use((req, res) => {
-	const path =
-		req.path === "/" ? "/index.html" : req.path.includes(".") ? req.path : req.path + ".js";
+	const path = req.path === "/" ? "/index.html" : req.path;
 
 	res.sendFile(join(cwd(), path));
 	console.log(path);

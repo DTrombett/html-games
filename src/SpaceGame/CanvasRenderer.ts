@@ -50,9 +50,17 @@ class CanvasRenderer {
 				if (font) this.ctx.font = font;
 				if (fill) this.ctx.fillStyle = fill;
 				if (align) this.ctx.textAlign = align;
-				this.ctx.fillText(child.text, child.pos.x, child.pos.y);
+				this.ctx.fillText(
+					child.text,
+					Math.round(child.pos.x),
+					Math.round(child.pos.y)
+				);
 			} else if (child instanceof Sprite)
-				this.ctx.drawImage(child.texture.img, child.pos.x, child.pos.y);
+				this.ctx.drawImage(
+					child.texture.img,
+					Math.round(child.pos.x),
+					Math.round(child.pos.y)
+				);
 			else if (child instanceof Container) this.renderContainer(child);
 			this.ctx.restore();
 		}

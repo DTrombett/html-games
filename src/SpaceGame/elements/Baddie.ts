@@ -14,7 +14,7 @@ class Baddie extends Sprite {
 	/**
 	 * The speed of the element in px/s
 	 */
-	speed = Math.random() * 100 + 100;
+	speed = Math.random() * 150 + 50;
 
 	/**
 	 * @param game - The game
@@ -27,7 +27,7 @@ class Baddie extends Sprite {
 	}
 
 	update(dt: number) {
-		this.pos.x += Math.round((-this.speed * dt) / 1_000);
+		this.pos.x += (-this.speed * dt) / 1_000;
 	}
 }
 

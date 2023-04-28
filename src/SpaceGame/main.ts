@@ -4,16 +4,13 @@ import Game from "./elements/Game";
 const game = new Game({
 	width: 640,
 	height: 320,
-	scoreSize: 20,
-	gameOverSize: 30,
 });
 
 game.start((timestamp) => {
-	const dt = timestamp - game.lastTimestamp;
-	const elapsed = timestamp - game.startTimestamp;
-
 	if (!game.gameOver) {
-		game.score += dt / 1_000;
+		const elapsed = timestamp - game.startTimestamp;
+
+		game.score += (timestamp - game.lastTimestamp) / 1_000;
 		if (game.keyControls.action && timestamp - game.lastShot > 100)
 			game.shoot(timestamp);
 		if (
@@ -31,13 +28,10 @@ game.start((timestamp) => {
 					(baddie.pos.x + 16 - (bullet.pos.x + 8)) ** 2 +
 						(baddie.pos.y + 16 - (bullet.pos.y + 8)) ** 2
 				) < 24
-			) {
-				baddie.dead = true;
-				bullet.dead = true;
-				game.score += dt / 10;
-			}
+			)
+				game.killBaddie(timestamp, baddie, bullet);
 		if (baddie.pos.x < 0) {
-			if (!game.gameOver) game.doGameOver();
+			if (!game.gameOver) game.doGameOver(timestamp);
 			baddie.dead = true;
 		}
 	}

@@ -10,6 +10,21 @@ import Texture from "./Texture";
 
 class Game {
 	/**
+	 * The size of the score text
+	 */
+	static scoreSize = 20;
+
+	/**
+	 * The size of the game over text
+	 */
+	static gameOverSize = 30;
+
+	/**
+	 * The size of the game over footer
+	 */
+	static gameOverFooterSize = 15;
+
+	/**
 	 * The renderer
 	 */
 	renderer: CanvasRenderer;
@@ -55,11 +70,6 @@ class Game {
 	width: number;
 
 	/**
-	 * The size of the game over text
-	 */
-	gameOverSize: number;
-
-	/**
 	 * The game score
 	 */
 	score = 0;
@@ -90,6 +100,11 @@ class Game {
 	lastSpawn = 0;
 
 	/**
+	 * The number of killed baddies
+	 */
+	killedBaddies = 0;
+
+	/**
 	 * The loop function of the game
 	 */
 	loop?: (timestamp: number) => void;
@@ -97,15 +112,9 @@ class Game {
 	/**
 	 * @param options - The options for the game
 	 */
-	constructor(options: {
-		width: number;
-		height: number;
-		scoreSize: number;
-		gameOverSize: number;
-	}) {
+	constructor(options: { width: number; height: number }) {
 		this.width = options.width;
 		this.height = options.height;
-		this.gameOverSize = options.gameOverSize;
 		this.keyControls = new KeyControls();
 		this.renderer = new CanvasRenderer(this);
 		this.scene = new Container(this);
@@ -114,13 +123,13 @@ class Game {
 		this.ship = new Ship(this);
 		this.scoreText = new Text(
 			this,
-			`Score: ${this.score}`,
+			`Score: ${this.score} - Baddies killed: ${this.killedBaddies}`,
 			{
-				font: `${options.scoreSize}px sans-serif`,
+				font: `${Game.scoreSize}px sans-serif`,
 				fill: "#8B8994",
 				align: "center",
 			},
-			{ x: this.width / 2, y: this.height - options.scoreSize }
+			{ x: this.width / 2, y: this.height - Game.scoreSize }
 		);
 	}
 
@@ -141,18 +150,36 @@ class Game {
 
 	/**
 	 * Request the game over.
+	 * @param timestamp - The current timestamp
 	 */
-	doGameOver() {
+	doGameOver(timestamp: number) {
 		this.scene.add(
 			new Text(
 				this,
 				"Game Over",
 				{
-					font: `${this.gameOverSize}px sans-serif`,
+					font: `${Game.gameOverSize}px sans-serif`,
 					fill: "red",
 					align: "center",
 				},
-				{ x: this.width / 2, y: this.height / 2 - this.gameOverSize }
+				{ x: this.width / 2, y: this.height / 2 - Game.gameOverSize }
+			)
+		);
+		this.scene.add(
+			new Text(
+				this,
+				`You lasted ${Math.round(
+					(timestamp - this.startTimestamp) / 1_000
+				)} seconds`,
+				{
+					font: `${Game.gameOverFooterSize}px sans-serif`,
+					fill: "red",
+					align: "center",
+				},
+				{
+					x: this.width / 2,
+					y: this.height / 2,
+				}
 			)
 		);
 		this.scene.remove(this.ship);
@@ -160,7 +187,7 @@ class Game {
 	}
 
 	/**
-	 * Shoot.
+	 * Shoot a bullet.
 	 * @param timestamp - The current timestamp
 	 */
 	shoot(timestamp: number) {
@@ -168,16 +195,35 @@ class Game {
 		this.lastShot = timestamp;
 	}
 
+	/**
+	 * Spawn a baddie.
+	 * @param timestamp - The current timestamp
+	 */
 	spawnBaddie(timestamp: number) {
 		this.baddies.add(new Baddie(this));
 		this.lastSpawn = timestamp;
+	}
+
+	/**
+	 * Kill a baddie.
+	 * @param timestamp - The current timestamp
+	 * @param baddie - The baddie to kill
+	 * @param bullet - The bullet to use
+	 */
+	killBaddie(timestamp: number, baddie: Baddie, bullet: Bullet) {
+		baddie.dead = true;
+		bullet.dead = true;
+		this.killedBaddies++;
+		this.score += 10;
 	}
 
 	private callback(timestamp: number) {
 		requestAnimationFrame((t) => this.callback(t));
 		this.startTimestamp ||= timestamp;
 		this.loop?.(timestamp);
-		this.scoreText.text = `Score: ${Math.round(this.score)}`;
+		this.scoreText.text = `Score: ${Math.round(this.score)} - Baddies killed: ${
+			this.killedBaddies
+		}`;
 		this.scene.update(timestamp - this.lastTimestamp);
 		this.renderer.render();
 		this.lastTimestamp = timestamp;
