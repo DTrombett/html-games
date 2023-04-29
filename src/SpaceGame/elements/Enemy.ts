@@ -3,13 +3,13 @@ import Sprite from "./Sprite";
 import Texture from "./Texture";
 
 /**
- * A bad guy
+ * A enemy
  */
-class Baddie extends Sprite {
+class Enemy extends Sprite {
 	/**
 	 * The texture for the sprite
 	 */
-	static texture = new Texture("res/images/baddie.png");
+	static texture = new Texture("res/images/enemy.png");
 
 	/**
 	 * The speed of the element in px/s
@@ -20,7 +20,7 @@ class Baddie extends Sprite {
 	 * @param game - The game
 	 */
 	constructor(game: Game) {
-		super(game, Baddie.texture, {
+		super(game, Enemy.texture, {
 			x: game.width,
 			y: Math.random() * (game.height - 32),
 		});
@@ -31,4 +31,4 @@ class Baddie extends Sprite {
 	}
 }
 
-export default Baddie;
+export default Enemy;

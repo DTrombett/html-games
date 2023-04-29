@@ -1,6 +1,5 @@
 import Game from "./elements/Game";
 
-// TODO: Adapt the game to the window size
 const game = new Game({
 	width: 640,
 	height: 320,
@@ -18,21 +17,21 @@ game.start((timestamp) => {
 			timestamp - game.lastSpawn >=
 				(10_000_000 / elapsed) * (Math.random() * 0.5 + 0.75)
 		)
-			game.spawnBaddie(timestamp);
+			game.spawnEnemy(timestamp);
 	}
-	for (const baddie of game.baddies.children) {
+	for (const enemy of game.enemies.children) {
 		for (const bullet of game.bullets.children)
 			if (
 				!bullet.dead &&
 				Math.sqrt(
-					(baddie.pos.x + 16 - (bullet.pos.x + 8)) ** 2 +
-						(baddie.pos.y + 16 - (bullet.pos.y + 8)) ** 2
+					(enemy.pos.x + 16 - (bullet.pos.x + 8)) ** 2 +
+						(enemy.pos.y + 16 - (bullet.pos.y + 8)) ** 2
 				) < 24
 			)
-				game.killBaddie(timestamp, baddie, bullet);
-		if (baddie.pos.x < 0) {
+				game.killEnemy(enemy, bullet);
+		if (enemy.pos.x < 0) {
 			if (!game.gameOver) game.doGameOver(timestamp);
-			baddie.dead = true;
+			enemy.dead = true;
 		}
 	}
 });

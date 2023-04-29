@@ -1,8 +1,8 @@
 import CanvasRenderer from "../CanvasRenderer";
 import KeyControls from "../controls/KeyControls";
-import Baddie from "./Baddie";
 import Bullet from "./Bullet";
 import Container from "./Container";
+import Enemy from "./Enemy";
 import Ship from "./Ship";
 import Sprite from "./Sprite";
 import Text from "./Text";
@@ -45,9 +45,9 @@ class Game {
 	bullets: Container<Bullet>;
 
 	/**
-	 * The container for the baddies
+	 * The container for the enemies
 	 */
-	baddies: Container<Baddie>;
+	enemies: Container<Enemy>;
 
 	/**
 	 * The ship
@@ -100,9 +100,9 @@ class Game {
 	lastSpawn = 0;
 
 	/**
-	 * The number of killed baddies
+	 * The number of killed enemies
 	 */
-	killedBaddies = 0;
+	killedEnemies = 0;
 
 	/**
 	 * The loop function of the game
@@ -119,11 +119,11 @@ class Game {
 		this.renderer = new CanvasRenderer(this);
 		this.scene = new Container(this);
 		this.bullets = new Container<Bullet>(this);
-		this.baddies = new Container<Baddie>(this);
+		this.enemies = new Container<Enemy>(this);
 		this.ship = new Ship(this);
 		this.scoreText = new Text(
 			this,
-			`Score: ${this.score} - Baddies killed: ${this.killedBaddies}`,
+			`Score: ${this.score} - Enemies killed: ${this.killedEnemies}`,
 			{
 				font: `${Game.scoreSize}px sans-serif`,
 				fill: "#8B8994",
@@ -141,7 +141,7 @@ class Game {
 		this.loop = loop;
 		this.scene.add(new Sprite(this, new Texture("res/images/bg.png")));
 		this.scene.add(this.scoreText);
-		this.scene.add(this.baddies);
+		this.scene.add(this.enemies);
 		this.scene.add(this.bullets);
 		this.scene.add(this.ship);
 		document.querySelector("#board")!.appendChild(this.renderer.view);
@@ -196,24 +196,23 @@ class Game {
 	}
 
 	/**
-	 * Spawn a baddie.
+	 * Spawn a enemy.
 	 * @param timestamp - The current timestamp
 	 */
-	spawnBaddie(timestamp: number) {
-		this.baddies.add(new Baddie(this));
+	spawnEnemy(timestamp: number) {
+		this.enemies.add(new Enemy(this));
 		this.lastSpawn = timestamp;
 	}
 
 	/**
-	 * Kill a baddie.
-	 * @param timestamp - The current timestamp
-	 * @param baddie - The baddie to kill
+	 * Kill a enemy.
+	 * @param enemy - The enemy to kill
 	 * @param bullet - The bullet to use
 	 */
-	killBaddie(timestamp: number, baddie: Baddie, bullet: Bullet) {
-		baddie.dead = true;
+	killEnemy(enemy: Enemy, bullet: Bullet) {
+		enemy.dead = true;
 		bullet.dead = true;
-		this.killedBaddies++;
+		this.killedEnemies++;
 		this.score += 10;
 	}
 
@@ -221,8 +220,8 @@ class Game {
 		requestAnimationFrame((t) => this.callback(t));
 		this.startTimestamp ||= timestamp;
 		this.loop?.(timestamp);
-		this.scoreText.text = `Score: ${Math.round(this.score)} - Baddies killed: ${
-			this.killedBaddies
+		this.scoreText.text = `Score: ${Math.round(this.score)} - Enemies killed: ${
+			this.killedEnemies
 		}`;
 		this.scene.update(timestamp - this.lastTimestamp);
 		this.renderer.render();
