@@ -144,7 +144,7 @@ class Game {
 		this.scene.add(this.enemies);
 		this.scene.add(this.bullets);
 		this.scene.add(this.ship);
-		document.querySelector("#board")!.appendChild(this.renderer.view);
+		document.body.appendChild(this.renderer.view);
 		requestAnimationFrame((t) => this.callback(t));
 	}
 
